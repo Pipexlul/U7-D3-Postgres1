@@ -1,7 +1,11 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 
-const DEFAULT_PORT = 3000;
+const portNum = parseInt(process.env.TEST_PORT);
+const DEFAULT_PORT = portNum || 3000;
 
 const app = express();
 
