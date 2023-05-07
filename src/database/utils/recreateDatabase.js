@@ -1,7 +1,7 @@
 import pg from "pg";
 const { Pool } = pg;
 
-import dbPoolConfig from "../config/dbPoolConfig.js";
+import dbPoolConfig from "../../config/dbPoolConfig.js";
 
 const recreateDb = async (pool) => {
   try {
