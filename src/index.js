@@ -4,6 +4,9 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 
+import asyncLoader from "./middleware/asyncMiddleware.js";
+import postsRoutes from "./routes/posts.js";
+
 const main = async () => {
   const portNum = parseInt(process.env.TEST_PORT);
   const DEFAULT_PORT = portNum || 3000;
@@ -13,12 +16,8 @@ const main = async () => {
   app.use(cors());
   app.use(express.json());
 
-  app.get("/posts", (req, res) => {
-    res.send("Hello World!");
-  });
-  app.post("/posts", (req, res) => {
-    res.send("Hello World!");
-  });
+  app.get("/posts", asyncLoader(postsRoutes.getPosts));
+  app.post("/posts", asyncLoader(postsRoutes.createPost));
 
   app.listen(DEFAULT_PORT, () => {
     console.log(`Server running on port ${DEFAULT_PORT}`);
