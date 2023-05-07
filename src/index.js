@@ -3,18 +3,60 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import pg from "pg";
+const { Pool } = pg;
 
-const portNum = parseInt(process.env.TEST_PORT);
-const DEFAULT_PORT = portNum || 3000;
+import dbPoolConfig from "./config/dbPoolConfig.js";
 
-const app = express();
+import { recreateDb } from "./utils/recreateDatabase.js";
 
-app.use(cors());
-app.use(express.json());
+const args = process.argv.slice(2);
 
-app.get("/posts", null);
-app.post("/posts", null);
+const main = async () => {
+  let dbPool;
 
-app.listen(DEFAULT_PORT, () => {
-  console.log(`Server running on port ${DEFAULT_PORT}`);
-});
+  if (
+    !args.some(
+      (arg) =>
+        arg.toLowerCase() === "-s" || arg.toLowerCase() === "--skip-recreate"
+    )
+  ) {
+    const rootPool = new Pool({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: "postgres",
+    });
+
+    try {
+      dbPool = await recreateDb(rootPool);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      rootPool.end();
+    }
+  } else {
+    dbPool = new Pool(dbPoolConfig());
+  }
+
+  const portNum = parseInt(process.env.TEST_PORT);
+  const DEFAULT_PORT = portNum || 3000;
+
+  const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+
+  app.get("/posts", (req, res) => {
+    res.send("Hello World!");
+  });
+  app.post("/posts", (req, res) => {
+    res.send("Hello World!");
+  });
+
+  app.listen(DEFAULT_PORT, () => {
+    console.log(`Server running on port ${DEFAULT_PORT}`);
+  });
+};
+
+main();
