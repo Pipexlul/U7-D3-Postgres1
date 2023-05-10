@@ -26,5 +26,5 @@
 La ruta `POST /posts` contiene un middleware validador en el que espera que 3 propiedades de un objeto JSON existan y no estén vacias. <br/>
 Las propiedades son: <br/>
 `titulo` <br/>
-`img` <br/>
+`url` <br/>
 `descripcion` <br/>
