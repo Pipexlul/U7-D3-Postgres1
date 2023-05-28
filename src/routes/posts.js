@@ -1,13 +1,10 @@
-import dbManager from "../database/manager.js";
-const { query } = dbManager;
-
-const POSTS_TABLENAME = "posts";
+import { retrievePosts, insertPost } from "../database/db.js";
 
 const getPosts = async (req, res) => {
   try {
-    const posts = await query(`SELECT * FROM ${POSTS_TABLENAME};`);
+    const posts = await retrievePosts();
 
-    res.status(200).json(posts.rows);
+    res.status(200).json(posts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -18,10 +15,7 @@ const createPost = async (req, res) => {
   try {
     const { titulo, url, descripcion } = req.body;
 
-    await query(
-      `INSERT INTO ${POSTS_TABLENAME} (titulo, img, descripcion) VALUES ($1, $2, $3);`,
-      [titulo, url, descripcion]
-    );
+    await insertPost({ titulo, url, descripcion });
 
     res.status(201).end();
   } catch (err) {
